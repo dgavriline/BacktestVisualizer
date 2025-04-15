@@ -6,11 +6,12 @@ bot = DipBuyBot()
 
 config = {
     "start": "2022-01-03",
-    "end": "2022-10-12",
-    "dip_threshold": 0.3,
-    "hold_days": 15,
+    "end": "2025-04-12",
+    "dip_threshold": 0.25,
+    "gain_threshold": 0.10,
+    "hold_days": 5,
     "initial_cash": 1000000,
-    "max_alloc_amount": 25000  # Use fixed amount per position
+    "max_alloc_amount": 10000 
 }
 
 result = bot.run_backtest(config)

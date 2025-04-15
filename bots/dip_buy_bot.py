@@ -4,6 +4,7 @@ import requests
 from datetime import timedelta
 from io import StringIO
 import plotly.graph_objects as go
+import plotly.express as px
 
 
 class DipBuyBot:
@@ -17,7 +18,7 @@ class DipBuyBot:
         max_alloc_amount = config.get("max_alloc_amount", 500)
 
         tickers = self.get_sp500_tickers()
-        tickers = tickers[:50]  # trim for testing
+        tickers = tickers[:500] 
 
         cash = initial_cash
         positions = []
@@ -110,6 +111,24 @@ class DipBuyBot:
         # Export trades to CSV
         df_trades = pd.DataFrame(flat_trades)
         df_trades.to_csv("backtest_trades.csv", index=False)
+
+        # Pie chart of trade outcomes
+        def classify_trade(row):
+            if row["exit_reason"] == "timeout" and row["pnl"] < 0:
+                return "Timeout Loss"
+            elif row["exit_reason"] == "timeout" and 0 <= row["pnl_pct"] > 0:
+                return "Timeout Gain"
+            else:
+                return "Gain"
+
+        df_trades["category"] = df_trades.apply(classify_trade, axis=1)
+
+        fig_pie = px.pie(df_trades, names="category", title="Trade Outcomes", color="category",
+                         color_discrete_map={"Timeout Loss": "red", "Timeout Gain": "orange", "Gain": "green"})
+        fig_pie.show()
+
+        
+
 
         # Plotly graph of account value, cash, and positions
         fig = go.Figure()
