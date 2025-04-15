@@ -1,0 +1,25 @@
+[project]
+name = "backtestvisualizer"
+version = "0.1.0"
+description = "A modular backtesting visualizer for trading bots"
+authors = [{ name = "Dennis Gavriline" }]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "yfinance >=0.2.55,<0.3.0",
+    "pandas >=2.2.3,<3.0.0",
+    "requests >=2.31.0,<3.0.0",
+    "fastapi >=0.110.0,<1.0.0",
+    "uvicorn[standard] >=0.29.0,<1.0.0",
+    "streamlit >=1.33.0,<2.0.0",
+    "lxml (>=5.3.2,<6.0.0)",
+    "plotly (>=6.0.1,<7.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
