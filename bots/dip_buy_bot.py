@@ -12,13 +12,14 @@ class DipBuyBot:
         start = config.get("start", "2022-01-01")
         end = config.get("end", "2025-04-01")
         dip_pct = config.get("dip_threshold", 0.03)
-        hold_days = config.get("hold_days", 10)  # max hold duration
-        gain_threshold = config.get("gain_threshold", 0.10)  # +10% exit
+        hold_days = config.get("hold_days", 10)
+        gain_threshold = config.get("gain_threshold", 0.10)
         initial_cash = config.get("initial_cash", 10000)
         max_alloc_amount = config.get("max_alloc_amount", 500)
+        dip_lookback_days = config.get("dip_lookback_days", 30)
 
         tickers = self.get_sp500_tickers()
-        tickers = tickers[:500] 
+        tickers = tickers[:500]
 
         cash = initial_cash
         positions = []
@@ -35,7 +36,7 @@ class DipBuyBot:
                 df.columns = df.columns.droplevel(1)
             if df.empty or "Close" not in df.columns:
                 continue
-            df["Peak"] = df["Close"].cummax()
+            df["Peak"] = df["Close"].rolling(window=dip_lookback_days, min_periods=1).max()
             df["Dip"] = (df["Peak"] - df["Close"]) / df["Peak"]
             price_data[ticker] = df
 
@@ -126,9 +127,6 @@ class DipBuyBot:
         fig_pie = px.pie(df_trades, names="category", title="Trade Outcomes", color="category",
                          color_discrete_map={"Timeout Loss": "red", "Timeout Gain": "orange", "Gain": "green"})
         fig_pie.show()
-
-        
-
 
         # Plotly graph of account value, cash, and positions
         fig = go.Figure()
