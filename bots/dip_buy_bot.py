@@ -18,8 +18,22 @@ class DipBuyBot:
         max_alloc_amount = config.get("max_alloc_amount", 500)
         dip_lookback_days = config.get("dip_lookback_days", 30)
 
-        tickers = self.get_sp500_tickers()
-        tickers = tickers[:500]
+        # Load historical S&P 500 membership data
+        hist_df = pd.read_csv("S&P 500 Historical Components Mar 10 2025.csv")
+        hist_df["date"] = pd.to_datetime(hist_df["date"])
+        hist_df.set_index("date", inplace=True)
+
+        def get_constituents_on_date(target_date):
+            valid_dates = hist_df.index[hist_df.index <= target_date]
+            if len(valid_dates) == 0:
+                return set()
+            most_recent_date = valid_dates.max()
+            tickers = hist_df.loc[most_recent_date, "tickers"]
+            return set(tickers.split(","))
+
+        all_tickers = set()
+        for tickers in hist_df["tickers"]:
+            all_tickers.update(tickers.split(","))
 
         cash = initial_cash
         positions = []
@@ -28,9 +42,9 @@ class DipBuyBot:
         cash_by_date = {}
         positions_by_date = {}
 
-        # Download and process historical price data
+        # Download and process historical price data for all tickers in the history
         price_data = {}
-        for ticker in tickers:
+        for ticker in all_tickers:
             df = yf.download(ticker, start=start, end=end, auto_adjust=True, progress=False)
             if isinstance(df.columns, pd.MultiIndex):
                 df.columns = df.columns.droplevel(1)
@@ -43,6 +57,8 @@ class DipBuyBot:
         all_dates = sorted(set().union(*[df.index for df in price_data.values()]))
 
         for date in all_dates:
+            current_constituents = get_constituents_on_date(date)
+
             # SELL logic
             new_positions = []
             for position in positions:
@@ -74,7 +90,10 @@ class DipBuyBot:
             positions = new_positions
 
             # BUY logic
-            for ticker, df in price_data.items():
+            for ticker in current_constituents:
+                if ticker not in price_data:
+                    continue
+                df = price_data[ticker]
                 if any(pos["ticker"] == ticker for pos in positions):
                     continue
                 if date not in df.index:
@@ -96,7 +115,7 @@ class DipBuyBot:
             pos_val = 0
             for position in positions:
                 ticker = position["ticker"]
-                if date in price_data[ticker].index:
+                if ticker in price_data and date in price_data[ticker].index:
                     price = price_data[ticker].loc[date]["Close"]
                     pos_val += position["shares"] * price
 

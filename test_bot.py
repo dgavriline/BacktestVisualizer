@@ -5,7 +5,7 @@ from bots.dip_buy_bot import DipBuyBot
 bot = DipBuyBot()
 
 config = {
-    "start": "2022-01-03",
+    "start": "2015-01-03",
     "end": "2025-04-12",
     "dip_threshold": 0.10,
     "gain_threshold": 0.10,

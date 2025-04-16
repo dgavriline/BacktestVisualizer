@@ -16,7 +16,8 @@ end_date = st.sidebar.date_input("End Date", yesterday)
 dip_threshold = st.sidebar.slider("Dip Threshold (%)", 1, 50, 25) / 100
 gain_threshold = st.sidebar.slider("Gain Threshold (%)", 1, 50, 10) / 100
 hold_days = st.sidebar.slider("Hold Period (days)", 1, 30, 5)
-max_alloc = st.sidebar.number_input("Max Allocation per Trade ($)", 100, 10000, 10000, step=100)
+dip_lookback_days = st.sidebar.slider("Dip Lookback Days", 1, 60, 30)
+max_alloc = st.sidebar.number_input("Max Allocation per Trade ($)", 100, 10000, 500000, step=100)
 initial_cash = st.sidebar.number_input("Initial Cash ($)", 1000, 1000000, 1000000, step=1000)
 
 # Run backtest
@@ -25,10 +26,11 @@ if st.sidebar.button("Run Backtest"):
         "start": str(start_date),
         "end": str(end_date),
         "dip_threshold": dip_threshold,
-        "gain_threshold": gain_threshold,
         "hold_days": hold_days,
+        "gain_threshold": gain_threshold,
         "initial_cash": initial_cash,
-        "max_alloc_amount": max_alloc
+        "max_alloc_amount": max_alloc,
+        "dip_lookback_days": dip_lookback_days
     }
 
     st.info("Running backtest...")
