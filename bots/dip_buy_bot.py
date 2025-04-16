@@ -9,8 +9,8 @@ import plotly.express as px
 
 class DipBuyBot:
     def run_backtest(self, config: dict) -> dict:
-        start = config.get("start", "2023-01-01")
-        end = config.get("end", "2023-03-01")
+        start = config.get("start", "2022-01-01")
+        end = config.get("end", "2025-04-01")
         dip_pct = config.get("dip_threshold", 0.03)
         hold_days = config.get("hold_days", 10)  # max hold duration
         gain_threshold = config.get("gain_threshold", 0.10)  # +10% exit
