@@ -17,7 +17,7 @@ dip_threshold = st.sidebar.slider("Dip Threshold (%)", 1, 50, 25) / 100
 gain_threshold = st.sidebar.slider("Gain Threshold (%)", 1, 50, 10) / 100
 hold_days = st.sidebar.slider("Hold Period (days)", 1, 30, 5)
 dip_lookback_days = st.sidebar.slider("Dip Lookback Days", 1, 60, 30)
-max_alloc = st.sidebar.number_input("Max Allocation per Trade ($)", 100, 10000, 500000, step=100)
+max_alloc = st.sidebar.number_input("Max Allocation per Trade ($)", 100, 1000000, 20000, step=100)
 initial_cash = st.sidebar.number_input("Initial Cash ($)", 1000, 1000000, 1000000, step=1000)
 
 # Run backtest

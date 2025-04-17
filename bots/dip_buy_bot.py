@@ -151,7 +151,7 @@ class DipBuyBot:
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=sorted_dates, y=balance_curve, mode='lines', name='Total Account Value'))
         fig.add_trace(go.Scatter(x=sorted_dates, y=[cash_by_date[d] for d in sorted_dates], mode='lines', name='Cash'))
-        fig.add_trace(go.Scatter(x=sorted_dates, y=[positions_by_date[d] for d in sorted_dates], mode='lines', name='Positions Value'))
+        #fig.add_trace(go.Scatter(x=sorted_dates, y=[positions_by_date[d] for d in sorted_dates], mode='lines', name='Positions Value'))
         fig.update_layout(title='Account Value, Cash & Positions Over Time', xaxis_title='Date', yaxis_title='USD')
         fig.show()
 
