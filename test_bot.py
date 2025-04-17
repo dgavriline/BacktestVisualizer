@@ -7,12 +7,12 @@ bot = DipBuyBot()
 config = {
     "start": "2015-01-03",
     "end": "2025-04-12",
-    "dip_threshold": 0.10,
+    "dip_threshold": 0.15,
     "gain_threshold": 0.10,
-    "hold_days": 10,
+    "hold_days": 2,
     "initial_cash": 1000000,
-    "max_alloc_amount": 75000,
-    "dip_lookback_days": 2
+    "max_alloc_amount": 100000,
+    "dip_lookback_days": 15
 }
 
 result = bot.run_backtest(config)

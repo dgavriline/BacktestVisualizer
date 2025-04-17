@@ -149,9 +149,9 @@ class DipBuyBot:
 
         # Plotly graph of account value, cash, and positions
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=sorted_dates, y=balance_curve, mode='lines', name='Total Account Value'))
-        fig.add_trace(go.Scatter(x=sorted_dates, y=[cash_by_date[d] for d in sorted_dates], mode='lines', name='Cash'))
-        #fig.add_trace(go.Scatter(x=sorted_dates, y=[positions_by_date[d] for d in sorted_dates], mode='lines', name='Positions Value'))
+        fig.add_trace(go.Scatter(x=sorted_dates, y=balance_curve, mode='lines', name='Total Account Value', line=dict(color='blue')))
+        fig.add_trace(go.Scatter(x=sorted_dates, y=[cash_by_date[d] for d in sorted_dates], mode='lines', name='Cash', line=dict(color='green')))
+        fig.add_trace(go.Scatter(x=sorted_dates, y=[positions_by_date[d] for d in sorted_dates], mode='lines', name='Positions Value', line=dict(color='orange')))
         fig.update_layout(title='Account Value, Cash & Positions Over Time', xaxis_title='Date', yaxis_title='USD')
         fig.show()
 
@@ -168,9 +168,9 @@ class DipBuyBot:
             }
         }
 
-    def get_sp500_tickers(self) -> list:
-        url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
-        response = requests.get(url)
-        table = pd.read_html(StringIO(response.text))
-        tickers = table[0]['Symbol'].tolist()
-        return [symbol.replace('.', '-') for symbol in tickers]
+    # def get_sp500_tickers(self) -> list:
+    #     url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
+    #     response = requests.get(url)
+    #     table = pd.read_html(StringIO(response.text))
+    #     tickers = table[0]['Symbol'].tolist()
+    #     return [symbol.replace('.', '-') for symbol in tickers]

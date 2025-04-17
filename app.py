@@ -11,14 +11,14 @@ st.title("📈 Dip Buy Strategy Backtest")
 # Sidebar for inputs
 st.sidebar.header("Configure Backtest")
 yesterday = datetime.today() - timedelta(days=1)
-start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2022-01-03"))
+start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2015-01-03"))
 end_date = st.sidebar.date_input("End Date", yesterday)
-dip_threshold = st.sidebar.slider("Dip Threshold (%)", 1, 50, 25) / 100
+dip_threshold = st.sidebar.slider("Dip Threshold (%)", 1, 50, 15) / 100
 gain_threshold = st.sidebar.slider("Gain Threshold (%)", 1, 50, 10) / 100
-hold_days = st.sidebar.slider("Hold Period (days)", 1, 30, 5)
-dip_lookback_days = st.sidebar.slider("Dip Lookback Days", 1, 60, 30)
-max_alloc = st.sidebar.number_input("Max Allocation per Trade ($)", 100, 1000000, 20000, step=100)
-initial_cash = st.sidebar.number_input("Initial Cash ($)", 1000, 1000000, 1000000, step=1000)
+hold_days = st.sidebar.slider("Hold Period (days)", 1, 30, 2)
+dip_lookback_days = st.sidebar.slider("Dip Lookback Days", 1, 60, 15)
+max_alloc = st.sidebar.number_input("Max Allocation per Trade ($)", 100, 1000000, 100000, step=100)
+initial_cash = st.sidebar.number_input("Initial Cash ($)", 1000, 10000000, 1000000, step=1000)
 
 # Run backtest
 if st.sidebar.button("Run Backtest"):
