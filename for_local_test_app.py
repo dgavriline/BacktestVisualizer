@@ -37,7 +37,7 @@ if st.sidebar.button("Run Backtest"):
     st.info("Running backtest...")
 
     try:
-        response = requests.post("https://backtest-api-app.icymoss-e1d44fae.eastus.azurecontainerapps.io/run-backtest", json=config)
+        response = requests.post("http://localhost:8000/run-backtest", json=config)
         response.raise_for_status()
         result = response.json()
 
