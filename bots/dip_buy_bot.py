@@ -52,6 +52,8 @@ class DipBuyBot:
                 continue
             df["Peak"] = df["Close"].rolling(window=dip_lookback_days, min_periods=1).max()
             df["Dip"] = (df["Peak"] - df["Close"]) / df["Peak"]
+            df["Date"] = df.index
+            df["Date"] = pd.to_datetime(df["Date"]).dt.date
             price_data[ticker] = df
 
         all_dates = sorted(set().union(*[df.index for df in price_data.values()]))
@@ -68,7 +70,8 @@ class DipBuyBot:
                     continue
 
                 price = price_data[ticker].loc[date]["Close"]
-                days_held = (date - position["entry_date"]).days
+                market_dates = price_data[ticker].index[price_data[ticker].index >= position["entry_date"]]
+                days_held = len(market_dates[market_dates <= date]) - 1  # business days held
                 gain = (price - position["entry_price"]) / position["entry_price"]
 
                 if gain >= gain_threshold or days_held >= hold_days:
@@ -136,7 +139,7 @@ class DipBuyBot:
         def classify_trade(row):
             if row["exit_reason"] == "timeout" and row["pnl"] < 0:
                 return "Timeout Loss"
-            elif row["exit_reason"] == "timeout" and 0 <= row["pnl_pct"] > 0:
+            elif row["exit_reason"] == "timeout" and 0 <= row["pnl_pct"] >= 0:
                 return "Timeout Gain"
             else:
                 return "Gain"
@@ -167,10 +170,3 @@ class DipBuyBot:
                 "num_trades": len(flat_trades)
             }
         }
-
-    # def get_sp500_tickers(self) -> list:
-    #     url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
-    #     response = requests.get(url)
-    #     table = pd.read_html(StringIO(response.text))
-    #     tickers = table[0]['Symbol'].tolist()
-    #     return [symbol.replace('.', '-') for symbol in tickers]

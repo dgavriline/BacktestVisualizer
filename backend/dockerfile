@@ -1,0 +1,16 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy requirements from backend folder
+COPY backend/requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend code
+COPY backend/ .
+
+# Copy CSV file from data folder
+COPY data/sp500_history.csv /app/data/
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
