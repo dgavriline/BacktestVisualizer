@@ -13,7 +13,12 @@ st.title("📈 Dip Buy Strategy Backtest")
 # Sidebar for configuration
 st.sidebar.header("Configure Backtest")
 yesterday = datetime.today() - timedelta(days=1)
-start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2015-01-03"))
+
+N_DAYS_AGO = 20
+today = datetime.now()
+date_n_days_ago = today - timedelta(days=N_DAYS_AGO)
+
+start_date = st.sidebar.date_input("Start Date", date_n_days_ago)
 end_date = st.sidebar.date_input("End Date", yesterday)
 dip_threshold = st.sidebar.slider("Dip Threshold (%)", 1, 50, 15) / 100
 gain_threshold = st.sidebar.slider("Gain Threshold (%)", 1, 50, 10) / 100
