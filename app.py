@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime, timedelta
+import time
 
 # Set up the app layout
 st.set_page_config(page_title="Dip Buy Backtester", layout="wide")
@@ -34,21 +35,39 @@ if st.sidebar.button("Run Backtest"):
         "dip_lookback_days": dip_lookback_days
     }
 
-    st.info("Running backtest...")
+    st.info("Submitting backtest task...")
 
     try:
-        response = requests.post("https://backtest-api-app.icymoss-e1d44fae.eastus.azurecontainerapps.io/run-backtest", json=config)
+        # Step 1: Submit job
+        response = requests.post("https://backtest-api-app.icymoss-e1d44fae.eastus.azurecontainerapps.io/start-backtest", json=config)
         response.raise_for_status()
-        result = response.json()
+        task = response.json()
+        task_id = task["task_id"]
 
-        # Summary
+        st.success(f"Task submitted. Task ID: {task_id}")
+        with st.spinner("Running backtest (this may take a few minutes)..."):
+
+            # Step 2: Poll the backend
+            while True:
+                poll_response = requests.get(f"https://backtest-api-app.icymoss-e1d44fae.eastus.azurecontainerapps.io/check-backtest/{task_id}")
+                poll_response.raise_for_status()
+                result = poll_response.json()
+
+                if result.get("status") == "in_progress":
+                    time.sleep(60)
+                    continue
+                elif result.get("status") == "error":
+                    st.error("Backtest failed.")
+                    st.stop()
+                else:
+                    break
+
+        # Step 3: Display results
         st.subheader("Summary")
         st.json(result["summary"])
 
-        # Load trade log
         df_trades = pd.DataFrame(result['trades'])
 
-        # Reclassify trade outcomes for pie chart
         def classify_trade(row):
             if row["exit_reason"] == "timeout" and row["pnl"] < 0:
                 return "Timeout Loss"
@@ -70,7 +89,6 @@ if st.sidebar.button("Run Backtest"):
         )
         st.plotly_chart(fig_pie, use_container_width=True)
 
-        # Account value chart
         st.subheader("Account Value Over Time")
         fig_line = go.Figure()
         fig_line.add_trace(go.Scatter(
@@ -82,11 +100,9 @@ if st.sidebar.button("Run Backtest"):
         ))
         st.plotly_chart(fig_line, use_container_width=True)
 
-        # Trade log
         st.subheader("Trade Log")
         st.dataframe(df_trades)
 
-        # Download CSV
         st.download_button("Download Trades CSV", df_trades.to_csv(index=False), "trades.csv")
 
     except requests.exceptions.RequestException as e:

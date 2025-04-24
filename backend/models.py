@@ -1,5 +1,7 @@
 from typing import List, Literal
 from pydantic import BaseModel
+from pydantic import BaseModel
+from typing import Literal
 
 class Trade(BaseModel):
     ticker: str
@@ -35,3 +37,8 @@ class BacktestRequest(BaseModel):
     initial_cash: float
     max_alloc_amount: float
     dip_lookback_days: int
+
+
+class TaskStatus(BaseModel):
+    task_id: str
+    status: Literal["in_progress", "completed", "error"]

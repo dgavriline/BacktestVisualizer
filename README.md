@@ -97,7 +97,49 @@ az containerapp ingress enable \
   --type external
 
 response will look like this:
-Ingress enabled. Access your app at icymoss-e1d44fae.eastus.azurecontainerapps.io/
+Ingress enabled. Access your app at https://backtest-api-app.icymoss-e1d44fae.eastus.azurecontainerapps.io/
 copy that url into the app.py file and rerun the streamlit app
 
 (PUBICLY ACCESSBLE APPS WILL RETURN A URL, if response is null it didn't work)
+
+
+======================== MOVING FORWARD ========================
+When changes are made to any of the affected files the docker image needs to be rebuilt and pushed to ACR:
+
+1) Rebuild (Make sure to use linux/amd64):
+docker buildx build \
+  --platform linux/amd64 \
+  -t backtest-api . -f backend/Dockerfile \
+  --load
+
+2) Tag for ACR:
+docker tag backtest-api backtestacr.azurecr.io/backtest-api
+
+3) Push to ACR:
+docker push backtestacr.azurecr.io/backtest-api
+
+4) Update azure container to use latest image:
+az containerapp update \
+  --name backtest-api-app \
+  --resource-group BacktestGroup \
+  --image backtestacr.azurecr.io/backtest-api
+
+
+In case of errors when testing use this to check logs:
+az containerapp logs show \
+  --name backtest-api-app \
+  --resource-group BacktestGroup \
+  --follow
+
+
+Stopping and restarting the container:
+
+Stop: 
+az containerapp stop \
+  --name backtest-api-app \
+  --resource-group BacktestGroup
+
+Start: 
+az containerapp start \
+  --name backtest-api-app \
+  --resource-group BacktestGroup
